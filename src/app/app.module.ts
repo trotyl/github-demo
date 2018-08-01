@@ -19,7 +19,6 @@ import { AppComponent } from './app.component';
     MatInputModule,
     MatCardModule,
   ],
-  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
