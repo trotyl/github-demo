@@ -106,6 +106,39 @@ jobs:
         
       - run: yarn e2e
 
+  deploy:
+    docker:
+      - image: circleci/node:8.9-browsers
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - add_ssh_keys:
+          fingerprints:
+            - "8c:8a:44:df:c9:3d:a5:a6:3e:c1:69:0e:1a:9b:6d:6b"
+
+      - run: |
+          git config --global user.email "trotyl@qq.com"
+          git config --global user.name "Trotyl Yu"
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "yarn.lock" }}
+          - v1-dependencies-
+
+      - run: yarn install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "yarn.lock" }}
+
+      - run: yarn gh-build
+
+      - run: yarn deploy
+
   noop:
     docker:
       - image: circleci/node:8.9-browsers
@@ -131,10 +164,14 @@ workflows:
           filters:
             branches:
               ignore: /gh-pages/
-      - e2e:
+      # - e2e:
+      #     filters:
+      #       branches:
+      #         ignore: /gh-pages/
+      - deploy:
           filters:
             branches:
-              ignore: /gh-pages/
+              only: master
       - noop:
           filters:
             branches:
