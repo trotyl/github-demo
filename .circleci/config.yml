@@ -1,0 +1,178 @@
+# Javascript Node CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+#
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:8.9-browsers
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "yarn.lock" }}
+          - v1-dependencies-
+
+      - run: yarn install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "yarn.lock" }}
+        
+      - run: |
+          yarn build --prod --output-hashing none --no-progress
+
+      - run: |
+          gzip -k dist/github-demo/main.js
+
+      - store_artifacts:
+          path: ./dist/github-demo/main.js.gz
+          destination: main.js.gz
+
+  test:
+    docker:
+      - image: circleci/node:8.9-browsers
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "yarn.lock" }}
+          - v1-dependencies-
+
+      - run: yarn install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "yarn.lock" }}
+      
+      - run: yarn test --no-watch --no-progress --code-coverage
+
+      - run: yarn codecov
+
+  lint:
+    docker:
+      - image: circleci/node:8.9-browsers
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "yarn.lock" }}
+          - v1-dependencies-
+
+      - run: yarn install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "yarn.lock" }}
+        
+      - run: yarn lint
+
+  e2e:
+    docker:
+      - image: circleci/node:8.9-browsers
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "yarn.lock" }}
+          - v1-dependencies-
+
+      - run: yarn install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "yarn.lock" }}
+        
+      - run: yarn e2e
+
+  deploy:
+    docker:
+      - image: circleci/node:8.9-browsers
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - add_ssh_keys:
+          fingerprints:
+            - "94:c6:84:57:34:18:15:9c:6a:7b:fd:a9:e3:d2:87:f5"
+
+      - run: |
+          git config --global user.email "trotyl@qq.com"
+          git config --global user.name "Trotyl Yu"
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "yarn.lock" }}
+          - v1-dependencies-
+
+      - run: yarn install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "yarn.lock" }}
+
+      - run: yarn build --prod --base-href /github-demo/ --no-progress
+
+      - run: yarn deploy
+
+  noop:
+    docker:
+      - image: circleci/node:8.9-browsers
+
+    working_directory: ~/repo
+
+    steps:
+      - run: echo noop
+
+workflows:
+  version: 2
+  pipeline:
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore: /gh-pages/
+      - test:
+          filters:
+            branches:
+              ignore: /gh-pages/
+      - lint:
+          filters:
+            branches:
+              ignore: /gh-pages/
+      # - e2e:
+      #     filters:
+      #       branches:
+      #         ignore: /gh-pages/
+      - deploy:
+          filters:
+            branches:
+              only: master
+      - noop:
+          filters:
+            branches:
+              only: gh-pages
