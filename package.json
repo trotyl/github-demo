@@ -8,7 +8,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "deploy": "gh-pages -d dist -t"
+    "predeploy": "cp dist/github-demo/index.html dist/github-demo/404.html && cp -r .circleci/ dist/github-demo/.circleci/",
+    "deploy": "gh-pages -d dist/github-demo -t"
   },
   "private": true,
   "dependencies": {
