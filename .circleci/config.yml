@@ -135,7 +135,7 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "yarn.lock" }}
 
-      - run: yarn gh-build
+      - run: yarn build --prod --base-href /github-demo/ --no-progress
 
       - run: yarn deploy
 
