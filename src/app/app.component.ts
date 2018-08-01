@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { JitCompiler } from '@angular/compiler';
+
+console.log(JitCompiler);
 
 @Component({
   selector: 'app-root',
@@ -7,4 +10,8 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   input = 'foo';
+
+  unused() {
+    console.log(42);
+  }
 }
