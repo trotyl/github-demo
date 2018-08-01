@@ -117,7 +117,7 @@ jobs:
 
       - add_ssh_keys:
           fingerprints:
-            - "8c:8a:44:df:c9:3d:a5:a6:3e:c1:69:0e:1a:9b:6d:6b"
+            - "94:c6:84:57:34:18:15:9c:6a:7b:fd:a9:e3:d2:87:f5"
 
       - run: |
           git config --global user.email "trotyl@qq.com"
