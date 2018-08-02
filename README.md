@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/trotyl/github-demo/branch/master/graph/badge.svg)](https://codecov.io/gh/trotyl/github-demo)
+
 # Github Demo
 
 Project for GitHub feature demostration.
