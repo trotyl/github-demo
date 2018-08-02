@@ -28,6 +28,6 @@ describe('AppComponent', () => {
   it(`should have as value 'foo'`, async(() => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.debugElement.componentInstance as AppComponent;
-    expect(app.input).toEqual('foo');
+    expect(app.input).toEqual('baz');
   }));
 });
